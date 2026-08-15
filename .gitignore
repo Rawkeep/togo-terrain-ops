@@ -1,0 +1,4 @@
+# Lokale Kandidaten-Exporte nicht versionieren
+*.local.json
+togo-terrains-*.json
+.DS_Store
