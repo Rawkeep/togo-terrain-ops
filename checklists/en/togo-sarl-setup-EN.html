@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Setting up a SARL in Togo – Detailed Checklist</title>
+<style>
+  :root{
+    --ink:#14231c; --paper:#f7f5ef; --card:#ffffff;
+    --green:#1f6f43; --gold:#c8930a; --gold-soft:#f3e3bb;
+    --red:#b3402e; --muted:#6d7a72; --line:#dcd7c9; --done:#1f6f43;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+    background:var(--paper);color:var(--ink);line-height:1.55;padding-bottom:80px}
+  .kente{height:8px;background:repeating-linear-gradient(90deg,
+    var(--gold) 0 48px, var(--green) 48px 72px, var(--ink) 72px 84px, var(--red) 84px 96px)}
+  header{max-width:920px;margin:0 auto;padding:36px 20px 8px}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(28px,5vw,44px);
+     line-height:1.12;margin:8px 0 10px;font-weight:700}
+  h1 em{font-style:italic;color:var(--green)}
+  .sub{color:var(--muted);max-width:660px;font-size:15px}
+  .facts{max-width:920px;margin:22px auto 0;padding:0 20px;display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .fact{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .fact .fv{font-family:Georgia,serif;font-size:22px;font-weight:700;color:var(--green)}
+  .fact .fl{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+  .route{max-width:920px;margin:24px auto 0;padding:0 20px}
+  .routebar{position:relative;height:14px;background:#e8e4d8;border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+  .routefill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--green));transition:width .5s ease;border-radius:99px}
+  .routelabels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:6px;
+    letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+  .routestat{font-size:14px;margin-top:10px}
+  .routestat b{color:var(--green)}
+  main{max-width:920px;margin:22px auto 0;padding:0 20px}
+  .phase{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:18px;overflow:hidden}
+  .phead{display:flex;align-items:flex-start;gap:14px;padding:16px 18px;cursor:pointer;user-select:none}
+  .pnum{flex:0 0 auto;width:38px;height:38px;border-radius:50%;background:var(--ink);color:var(--gold);
+    display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-weight:700;font-size:17px}
+  .phase.complete .pnum{background:var(--done);color:#fff}
+  .ptitle{font-weight:700;font-size:17px}
+  .pmeta{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .pmeta b{color:var(--gold)}
+  .chev{margin-left:auto;flex:0 0 auto;color:var(--muted);transition:transform .2s;font-size:18px;padding-top:6px}
+  .phase.open .chev{transform:rotate(90deg)}
+  .pbody{display:none;border-top:1px dashed var(--line);padding:6px 18px 16px}
+  .phase.open .pbody{display:block}
+  .item{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid #f0ede3}
+  .item:last-of-type{border-bottom:none}
+  .item input{flex:0 0 auto;width:20px;height:20px;margin-top:2px;accent-color:var(--green);cursor:pointer}
+  .item label{cursor:pointer;font-size:14.5px}
+  .item.checked label{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--gold)}
+  .item .hint{display:block;font-size:12.5px;color:var(--muted);margin-top:2px;text-decoration:none!important}
+  .warn{background:#fbeeea;border-left:4px solid var(--red);padding:10px 14px;border-radius:0 8px 8px 0;
+    font-size:13.5px;margin:12px 0;color:#5f2419}
+  .tip{background:#eef5ef;border-left:4px solid var(--green);padding:10px 14px;border-radius:0 8px 8px 0;
+    font-size:13.5px;margin:12px 0}
+  .contact{background:#faf8f1;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0;font-size:13.5px}
+  .contact .cname{font-weight:700;color:var(--green)}
+  .contact .crow{margin-top:2px}
+  .contact a{color:var(--gold);font-weight:600;text-decoration:none;word-break:break-all}
+  .contact a:hover{text-decoration:underline}
+  h2.dir{font-family:Georgia,serif;font-size:24px;margin:34px 0 6px}
+  .dirsub{color:var(--muted);font-size:13.5px;margin-bottom:14px}
+  .dirgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+  footer{max-width:920px;margin:36px auto 0;padding:0 20px;font-size:12px;color:var(--muted)}
+  .reset{margin-top:14px;background:none;border:1px solid var(--line);border-radius:8px;padding:8px 14px;
+    font:inherit;font-size:13px;color:var(--muted);cursor:pointer}
+  .reset:hover{border-color:var(--red);color:var(--red)}
+</style>
+</head>
+<body>
+<div class="kente"></div>
+
+<header>
+  <div class="eyebrow">Module of “Operation Titre Foncier” · Option B · August 2026</div>
+  <h1>Setting up a SARL in Togo –<br><em>in hours, not weeks</em></h1>
+  <p class="sub">Togo is one of West Africa's most reformed countries for company formation: a SARL is created 100% online via the CFE, often in under 4 hours. This checklist takes you from strategy abroad to an operational company that can buy your land – and later serve as the vehicle for your Africa business.</p>
+</header>
+
+<div class="facts">
+  <div class="fact"><div class="fv">&lt; 4 h</div><div class="fl">CFE processing with a complete file (max. 48–72 h)</div></div>
+  <div class="fact"><div class="fv">29,250 F</div><div class="fl">CFE fee for a SARL (~€45), fixed price</div></div>
+  <div class="fact"><div class="fv">100% online</div><div class="fl">cfetogo.tg – no physical presence needed, proxy possible</div></div>
+  <div class="fact"><div class="fv">1 card</div><div class="fl">Carte unique = RCCM + NIF + CNSS with QR code</div></div>
+</div>
+
+<div class="route">
+  <div class="routebar"><div class="routefill" id="fill"></div></div>
+  <div class="routelabels"><span>Strategy</span><span>CFE file</span><span>SARL active ✓</span></div>
+  <div class="routestat" id="stat"></div>
+</div>
+
+<main id="plan"></main>
+
+<h2 class="dir" style="max-width:920px;margin-left:auto;margin-right:auto;padding:0 20px">Address book – SARL formation</h2>
+<p class="dirsub" style="max-width:920px;margin-left:auto;margin-right:auto;padding:0 20px">Togo country code: +228.</p>
+<div class="dirgrid" style="max-width:920px;margin:0 auto;padding:0 20px" id="directory"></div>
+
+<footer>
+  <p>Basis: OHADA Uniform Act (company law), CFE procedure and Togo's General Tax Code. Fees and timelines per official sources (cfetogo.tg, service-public.gouv.tg), as of 2026 – double-check before starting. Sources disagree on minimum capital (freely chosen vs. 1 million FCFA) – get binding confirmation from the CFE. Not legal/tax advice. €1 ≈ 655.957 FCFA.</p>
+  <button class="reset" onclick="resetAll()">Reset progress</button>
+</footer>
+
+<script>
+const CONTACTS = {
+  cfe: {name:"CFE – Business Formalities Centre", rows:[
+    "Corner Avenue de la Présidence &amp; Avenue Georges Pompidou, at the Chamber of Commerce and Industry of Togo (CCIT), B.P. 3210, Lomé",
+    "Phone: +228 22 20 63 60",
+    "Web/platform: <a href='https://cfetogo.tg' target='_blank'>cfetogo.tg</a> (SARL formation exclusively online)",
+    "Issues: carte unique with RCCM, NIF, CNSS · template articles &amp; forms for download"
+  ]},
+  otr: {name:"OTR – Togolese Revenue Office", rows:[
+    "41, rue des Impôts, Boulevard Gnassingbé Eyadéma, Lomé · Phone: +228 22 53 14 00 / 22 61 51 23",
+    "Web: <a href='https://www.otr.tg' target='_blank'>otr.tg</a>",
+    "Handles: the SARL's tax filings, registration of the land purchase (1.5%), later property tax"
+  ]},
+  notaires: {name:"National Chamber of Notaries of Togo", rows:[
+    "540, Rue Pydal, Tokoin Forever, 01 B.P. 2410, Lomé · Phone: +228 22 26 80 22",
+    "Email: notairestogo@gmail.com · Directory: <a href='https://notaires.tg/annuaire/' target='_blank'>notaires.tg/annuaire</a>",
+    "Needed for: articles at higher capital, later mandatory for the SARL's land purchase"
+  ]},
+  servicepublic: {name:"Portal service-public.gouv.tg", rows:[
+    "Official procedure sheets, including company formation",
+    "Web: <a href='https://service-public.gouv.tg' target='_blank'>service-public.gouv.tg</a>"
+  ]},
+  invest: {name:"Invest in Togo (API-ZF)", rows:[
+    "Investment promotion, contact lists (incl. notaries), free-zone regime",
+    "Web: <a href='https://investirautogo.tg' target='_blank'>investirautogo.tg</a>"
+  ]},
+  banken: {name:"Banks for the business account (selection)", rows:[
+    "Ecobank Togo · Orabank · Coris Bank International · BOA Togo – all with branches in Lomé",
+    "Tip: the account is not required for CFE registration – it can be opened after receiving the carte unique"
+  ]},
+  cnss: {name:"CNSS – National Social Security Fund", rows:[
+    "Social security – the number comes automatically with the carte unique",
+    "Relevant only once the SARL employs staff (e.g. a caretaker for the plot)"
+  ]}
+};
+
+const PLAN = [
+ {num:"1", title:"Strategy – settle from abroad", meta:"Duration: 2–5 days of thinking · Cost: €0", items:[
+   {t:"Choose the legal form: SARLU (you as sole shareholder) or SARL (with a partner)", h:"SARLU = full control, simplest governance. OHADA law, liability limited to contributions. Foreigners may incorporate and act as manager without any special permit."},
+   {t:"Register yourself as gérante (manager) or appoint a trusted person on the ground", h:"The manager may be a foreigner; physical presence is not required for formation – if needed, work via power of attorney."},
+   {t:"Draft a broad corporate purpose (objet social): real-estate acquisition/management + import/export + trading + consulting", h:"Your leverage: ONE vehicle for the land AND the future export business. Avoid misleading or regulated terms in the purpose – a cause for rejection."},
+   {t:"Pick the company name + 2 alternatives, sanity-check availability (not offensive, not misleading)", h:"Names with regulated terms (e.g. 'Bank', 'Bio' without proof) get rejected."},
+   {t:"Set the share capital and document its origin", h:"Careful, sources conflict: sometimes 'freely chosen', sometimes 1,000,000 FCFA (~€1,525) minimum for a SARL. Pragmatic: plan for 1M FCFA – also looks more solid to banks and the notary. Confirm with the CFE."},
+   {t:"Organise a registered office (siège social) in Togo: own address, family address or domiciliation service", h:"A plan de localisation (location sketch) of the address is required in the file."},
+ ]},
+ {num:"2", title:"Prepare the documents", meta:"Duration: 3–7 days · Cost: ~0–50,000 FCFA (copies, possibly notary)", items:[
+   {t:"Scan a valid passport (colour scan, relevant pages)"},
+   {t:"Fill in the sworn declaration of no criminal conviction (déclaration sur l'honneur)", h:"Official template for download on cfetogo.tg.", c:"cfe"},
+   {t:"Create the location sketch of the registered office (simple map with reference points)"},
+   {t:"Draft the articles of association – start from the CFE template and adapt", h:"Below 1M FCFA capital the notary is optional (private deed possible). With several shareholders or higher capital: have a notary review/draft – especially since the SARL will hold real estate.", c:"notaires"},
+   {t:"Obtain the capital deposit certificate (attestation de dépôt du capital)", h:"Depending on the setup, via a bank or a notary. Clarify with the CFE which form is accepted if no Togolese account exists yet."},
+   {t:"Name all PDFs cleanly and place them in an upload folder (your export-documentation standard 😉)"},
+ ]},
+ {num:"3", title:"Online formation on cfetogo.tg", meta:"Duration: under 4 h to 48–72 h · Cost: 29,250 FCFA (~€45)", items:[
+   {t:"Create an account on cfetogo.tg (on a computer, not a phone – the platform is desktop-optimised)", c:"cfe"},
+   {t:"Fill in the forms: company data, shareholders, manager, corporate purpose, capital, registered office"},
+   {t:"Upload all documents (passport, declaration, location sketch, articles, capital certificate)"},
+   {t:"Pay the CFE fee of 29,250 FCFA online (electronic payment methods on the portal; cash at the counter also possible)"},
+   {t:"Submit the file and track the status in your user account", h:"With a complete file the CFE promises processing in under 4 hours; realistically allow up to 48–72 h."},
+ ]},
+ {num:"4", title:"Receive the carte unique – the SARL exists", meta:"Duration: 24–48 h after validation", items:[
+   {t:"Download the carte unique de création d'entreprise from the online account", h:"Contains RCCM (trade register), NIF (tax ID) and CNSS number – tamper-proof thanks to the QR code.", c:"cfe"},
+   {t:"Add the RCCM and NIF numbers to your master data (and to the master plan's address book)"},
+   {t:"Make several certified copies/printouts – notary, bank and OTR will want to see them later"},
+ ]},
+ {num:"5", title:"After formation: account, taxes, order", meta:"Duration: 1–3 weeks · Cost: bank fees", items:[
+   {t:"Open the business account (Ecobank, Orabank, Coris etc.) – with carte unique, articles, passport", h:"Only needed now, not for formation. The purchase price to the notary will flow through this account.", c:"banken"},
+   {t:"Get tax orientation at the OTR: clarify the regime, check and apply for the 24-month tax exemptions for new companies", h:"Togo grants new companies tax exemptions during the first 24 months – have the conditions confirmed by the OTR.", c:"otr"},
+   {t:"Set up simple OHADA-compliant bookkeeping (even at zero turnover: annual filing!)", h:"A 'dormant' SARL without filings accumulates penalties. Set calendar reminders."},
+   {t:"Document a shareholders' resolution: 'The SARL acquires plot X' + power of attorney for the manager", h:"The notary will require proof that the manager may act for the company."},
+ ]},
+ {num:"6", title:"Docking to the land master plan", meta:"→ continue in the master plan, phase 2", items:[
+   {t:"The buyer in the purchase process = the SARL (RCCM + NIF), not you privately – tell the notary from the start", h:"This removes the prior authorization under Art. 317; the SARL is a Togolese legal entity.", c:"notaires"},
+   {t:"For the registration file, instead of passport copy/authorization: keep carte unique, articles, shareholders' resolution, manager's ID ready"},
+   {t:"After the purchase: capitalise the plot in the SARL's books, pay the property tax through the SARL", c:"otr"},
+   {t:"Long term: consider running further business (export/trading) through the same SARL or a sister structure"},
+ ]},
+];
+
+let checked = {};
+try { checked = JSON.parse(localStorage.getItem('togoSarl')||'{}'); } catch(e){ checked = {}; }
+function save(){ try{ localStorage.setItem('togoSarl', JSON.stringify(checked)); }catch(e){} }
+function contactCard(key){
+  const c = CONTACTS[key]; if(!c) return '';
+  return `<div class="contact"><div class="cname">📍 ${c.name}</div>${c.rows.map(r=>`<div class="crow">${r}</div>`).join('')}</div>`;
+}
+function render(){
+  const plan = document.getElementById('plan');
+  plan.innerHTML = '';
+  PLAN.forEach((ph, pi)=>{
+    const doneCount = ph.items.filter((it,ii)=>checked[pi+'-'+ii]).length;
+    const allDone = doneCount===ph.items.length;
+    const div = document.createElement('div');
+    div.className = 'phase'+(allDone?' complete':'')+(doneCount>0&&!allDone?' open':'');
+    const shown = new Set();
+    div.innerHTML = `
+      <div class="phead" onclick="this.parentElement.classList.toggle('open')">
+        <div class="pnum">${allDone?'✓':ph.num}</div>
+        <div>
+          <div class="ptitle">${ph.title}</div>
+          <div class="pmeta">${ph.meta} · <b>${doneCount}/${ph.items.length}</b> done</div>
+        </div>
+        <div class="chev">›</div>
+      </div>
+      <div class="pbody">
+        ${ph.items.map((it,ii)=>{
+          const id = pi+'-'+ii;
+          const cc = (it.c && !shown.has(it.c)) ? (shown.add(it.c), contactCard(it.c)) : '';
+          return `<div class="item ${checked[id]?'checked':''}">
+            <input type="checkbox" id="cb${id}" ${checked[id]?'checked':''} onchange="toggle('${id}')">
+            <label for="cb${id}">${it.t}${it.h?`<span class="hint">↳ ${it.h}</span>`:''}</label>
+          </div>${cc}`;
+        }).join('')}
+        ${pi===0?'<div class="tip"><b>Why incorporate broadly?</b> The corporate purpose costs nothing extra – but every later extension is an RCCM amendment with paperwork. Include real estate + trading + import/export from the start.</div>':''}
+        ${pi===2?'<div class="warn"><b>Beware of middlemen:</b> The official formation is so cheap (29,250 FCFA) and fast that any "formation service" quoting several hundred euros deserves scrutiny. Serious support yes – fantasy fees no.</div>':''}
+      </div>`;
+    plan.appendChild(div);
+  });
+  updateProgress();
+}
+function toggle(id){ checked[id]=!checked[id]; save(); render(); }
+function updateProgress(){
+  let total=0, done=0;
+  PLAN.forEach((ph,pi)=>ph.items.forEach((it,ii)=>{ total++; if(checked[pi+'-'+ii]) done++; }));
+  const pct = total? Math.round(done/total*100):0;
+  document.getElementById('fill').style.width = pct+'%';
+  document.getElementById('stat').innerHTML =
+    pct===100 ? '🎉 <b>SARL active!</b> Now back to the master plan → phase 2 (search &amp; checks).'
+    : `<b>${done}</b> of <b>${total}</b> steps completed (${pct}%)`;
+}
+function resetAll(){
+  if(confirm('Really reset all checkmarks?')){ checked={}; save(); render(); }
+}
+document.getElementById('directory').innerHTML =
+  Object.keys(CONTACTS).map(k=>contactCard(k)).join('');
+render();
+</script>
+</body>
+</html>

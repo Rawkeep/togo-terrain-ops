@@ -1,0 +1,139 @@
+{
+  "name": "Togo Terrain-Monitor (täglich)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            { "field": "cronExpression", "expression": "0 7 * * *" }
+          ]
+        }
+      },
+      "name": "Jeden Morgen 07:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-620, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ================= ZONEN-KONFIG =================\n// Hier Zonen, Budgets (FCFA) und Mindestfläche pflegen.\nconst zones = [\n  { zone: 'Agoè',           maxBudget: 13000000, minSize: 300 },\n  { zone: 'Sanguéra',       maxBudget: 13000000, minSize: 600 },\n  { zone: 'Adidogomé',      maxBudget: 13000000, minSize: 300 },\n  { zone: 'Adétikopé PIA',  maxBudget: 8000000,  minSize: 600 },\n  { zone: 'Davié Tsévié',   maxBudget: 6000000,  minSize: 600 },\n  { zone: 'Kpalimé',        maxBudget: 5000000,  minSize: 600 }\n];\nreturn zones.map(z => ({ json: z }));"
+      },
+      "name": "Zonen-Konfig",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-400, 0]
+    },
+    {
+      "parameters": { "options": {} },
+      "name": "Zone für Zone",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [-180, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "anthropic-version", "value": "2023-06-01" },
+            { "name": "content-type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  model: 'claude-sonnet-4-6',\n  max_tokens: 1200,\n  messages: [{ role: 'user', content: `Du bist ein Immobilien-Rechercheassistent für Togo. Suche im Web nach AKTUELLEN Grundstücksanzeigen (terrain à vendre) in der Zone \\\"${$json.zone}\\\" in Togo, Budget maximal ${$json.maxBudget} FCFA, Mindestfläche ${$json.minSize} m². Quellen: coinafrique, keur-immo, immoask, habitat-afrik, immautogo, agoloo.\\n\\nGib AUSSCHLIESSLICH ein JSON-Array zurück, ohne Markdown und ohne Erklärtext. Jedes Element: {\\\"name\\\":\\\"Kurzbezeichnung mit Quartier\\\",\\\"zone\\\":\\\"${$json.zone}\\\",\\\"price\\\":Zahl_FCFA,\\\"size\\\":Zahl_m2,\\\"papers\\\":\\\"TF|TFcours|3T|PV|PS|unbekannt\\\",\\\"source\\\":\\\"Plattform\\\",\\\"url\\\":\\\"Link oder leer\\\",\\\"note\\\":\\\"1 Satz\\\"}. Maximal 8 Einträge, nur Anzeigen mit konkretem Preis. Keine Funde: []` }],\n  tools: [{ type: 'web_search_20250305', name: 'web_search' }]\n}) }}",
+        "options": { "timeout": 120000 }
+      },
+      "name": "Claude Live-Scan",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [60, -20],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Anthropic API Key (x-api-key)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============ PARSEN + DEDUPE ============\n// Bereits gemeldete Anzeigen werden über Workflow-Static-Data gemerkt\n// (Fingerprint aus Name+Preis+Fläche), damit die Mail nur NEUE Funde enthält.\nconst staticData = $getWorkflowStaticData('global');\nstaticData.seen = staticData.seen || {};\n\nconst zone = $('Zone für Zone').item.json.zone;\nconst body = $input.item.json;\nconst textBlocks = (body.content || []).filter(b => b.type === 'text').map(b => b.text).join('\\n');\nconst clean = textBlocks.replace(/```json|```/g, '').trim();\nconst s = clean.indexOf('['), e = clean.lastIndexOf(']');\n\nlet finds = [];\nif (s !== -1 && e !== -1) {\n  try { finds = JSON.parse(clean.slice(s, e + 1)); } catch (err) { finds = []; }\n}\n\nconst fresh = [];\nfor (const f of finds) {\n  if (!f || !f.price || !f.size) continue;\n  const fp = `${(f.name||'').toLowerCase().slice(0,40)}|${f.price}|${f.size}`;\n  if (staticData.seen[fp]) continue;           // schon gemeldet\n  staticData.seen[fp] = new Date().toISOString();\n  fresh.push({\n    ...f,\n    zone,\n    eur: Math.round(f.price / 655.957),\n    ppm: Math.round(f.price / f.size),\n    foundAt: new Date().toISOString().slice(0, 10)\n  });\n}\n\n// Gedächtnis begrenzen (max ~500 Einträge)\nconst keys = Object.keys(staticData.seen);\nif (keys.length > 500) keys.slice(0, keys.length - 500).forEach(k => delete staticData.seen[k]);\n\nreturn fresh.map(f => ({ json: f }));"
+      },
+      "name": "Parsen + Dedupe",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [280, -20]
+    },
+    {
+      "parameters": {},
+      "name": "Neue Funde sammeln",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [500, -20]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "name": "Alle Zonen bündeln",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [280, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" },
+          "conditions": [
+            {
+              "leftValue": "={{ ($json.data || []).length }}",
+              "rightValue": 0,
+              "operator": { "type": "number", "operation": "gt" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "Gibt es Neues?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [500, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "terrain-monitor@example.com",
+        "toEmail": "DEINE-MAIL@example.com",
+        "subject": "=🛰 Togo Terrain-Monitor: {{ ($json.data || []).length }} neue Grundstücke",
+        "emailFormat": "html",
+        "html": "={{ '<div style=\"font-family:sans-serif\"><h2 style=\"color:#1f6f43\">Neue Grundstücks-Funde</h2>' + ($json.data || []).map(f => `<div style=\"border:1px solid #dcd7c9;border-radius:10px;padding:12px;margin:8px 0\"><b style=\"color:#c8930a;text-transform:uppercase;font-size:12px\">${f.zone} · ${f.source || 'Web'}</b><br><b>${f.name}</b><br>💰 ${f.price.toLocaleString('de-DE')} FCFA ≈ ${f.eur.toLocaleString('de-DE')} € · 📐 ${f.size} m² · ${f.ppm.toLocaleString('de-DE')} F/m²<br>📄 ${f.papers} ${f.note ? '· 📝 ' + f.note : ''}${f.url ? `<br><a href=\"${f.url}\">Anzeige öffnen ↗</a>` : ''}</div>`).join('') + '<p style=\"color:#6d7a72;font-size:12px\">Vor Kontakt: Quelle prüfen. Vor Zahlung: GFU-Check (Masterplan Phase 3). Nur 3 Tampons oder besser weiterverfolgen.</p></div>' }}",
+        "options": {}
+      },
+      "name": "E-Mail-Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [720, 180]
+    }
+  ],
+  "connections": {
+    "Jeden Morgen 07:00": { "main": [[ { "node": "Zonen-Konfig", "type": "main", "index": 0 } ]] },
+    "Zonen-Konfig": { "main": [[ { "node": "Zone für Zone", "type": "main", "index": 0 } ]] },
+    "Zone für Zone": {
+      "main": [
+        [ { "node": "Alle Zonen bündeln", "type": "main", "index": 0 } ],
+        [ { "node": "Claude Live-Scan", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Claude Live-Scan": { "main": [[ { "node": "Parsen + Dedupe", "type": "main", "index": 0 } ]] },
+    "Parsen + Dedupe": { "main": [[ { "node": "Neue Funde sammeln", "type": "main", "index": 0 } ]] },
+    "Neue Funde sammeln": { "main": [[ { "node": "Zone für Zone", "type": "main", "index": 0 } ]] },
+    "Alle Zonen bündeln": { "main": [[ { "node": "Gibt es Neues?", "type": "main", "index": 0 } ]] },
+    "Gibt es Neues?": { "main": [[ { "node": "E-Mail-Report", "type": "main", "index": 0 } ], []] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}

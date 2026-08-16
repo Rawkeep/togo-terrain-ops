@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Land in Togo – Master Plan to the Titre Foncier</title>
+<style>
+  :root{
+    --ink:#14231c; --paper:#f7f5ef; --card:#ffffff;
+    --green:#1f6f43; --gold:#c8930a; --gold-soft:#f3e3bb;
+    --red:#b3402e; --muted:#6d7a72; --line:#dcd7c9; --done:#1f6f43;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+    background:var(--paper);color:var(--ink);line-height:1.55;padding-bottom:80px}
+  .kente{height:8px;background:repeating-linear-gradient(90deg,
+    var(--green) 0 48px, var(--gold) 48px 72px, var(--ink) 72px 84px, var(--red) 84px 96px)}
+  header{max-width:920px;margin:0 auto;padding:36px 20px 8px}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(28px,5vw,44px);
+     line-height:1.12;margin:8px 0 10px;font-weight:700}
+  h1 em{font-style:italic;color:var(--green)}
+  .sub{color:var(--muted);max-width:640px;font-size:15px}
+  .route{max-width:920px;margin:26px auto 0;padding:0 20px}
+  .routebar{position:relative;height:14px;background:#e8e4d8;border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+  .routefill{height:100%;width:0%;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .5s ease;border-radius:99px}
+  .routelabels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:6px;
+    letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+  .routestat{font-size:14px;margin-top:10px;color:var(--ink)}
+  .routestat b{color:var(--green)}
+  .variants{max-width:920px;margin:26px auto 0;padding:0 20px;display:flex;gap:10px;flex-wrap:wrap}
+  .vbtn{flex:1;min-width:200px;text-align:left;padding:14px 16px;border:2px solid var(--line);
+    border-radius:12px;background:var(--card);cursor:pointer;font:inherit;transition:.15s}
+  .vbtn small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+  .vbtn.active{border-color:var(--green);background:#eef5ef;box-shadow:0 2px 0 var(--green)}
+  .vbtn.active .vt{color:var(--green)}
+  .vt{font-weight:700;font-size:15px}
+  main{max-width:920px;margin:20px auto 0;padding:0 20px}
+  .phase{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:18px;overflow:hidden}
+  .phead{display:flex;align-items:flex-start;gap:14px;padding:16px 18px;cursor:pointer;user-select:none}
+  .pnum{flex:0 0 auto;width:38px;height:38px;border-radius:50%;background:var(--ink);color:var(--gold);
+    display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-weight:700;font-size:17px}
+  .phase.complete .pnum{background:var(--done);color:#fff}
+  .ptitle{font-weight:700;font-size:17px}
+  .pmeta{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .pmeta b{color:var(--gold);font-weight:700}
+  .chev{margin-left:auto;flex:0 0 auto;color:var(--muted);transition:transform .2s;font-size:18px;padding-top:6px}
+  .phase.open .chev{transform:rotate(90deg)}
+  .pbody{display:none;border-top:1px dashed var(--line);padding:6px 18px 16px}
+  .phase.open .pbody{display:block}
+  .item{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid #f0ede3}
+  .item:last-of-type{border-bottom:none}
+  .item input{flex:0 0 auto;width:20px;height:20px;margin-top:2px;accent-color:var(--green);cursor:pointer}
+  .item label{cursor:pointer;font-size:14.5px}
+  .item.checked label{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--gold)}
+  .item .hint{display:block;font-size:12.5px;color:var(--muted);margin-top:2px;text-decoration:none!important}
+  .tagB{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;padding:1px 7px;border-radius:99px;
+    background:var(--gold-soft);color:#7a5a06;margin-left:6px;vertical-align:middle}
+  .warn{background:#fbeeea;border-left:4px solid var(--red);padding:10px 14px;border-radius:0 8px 8px 0;
+    font-size:13.5px;margin:12px 0;color:#5f2419}
+  .tip{background:#eef5ef;border-left:4px solid var(--green);padding:10px 14px;border-radius:0 8px 8px 0;
+    font-size:13.5px;margin:12px 0}
+  .contact{background:#faf8f1;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0;font-size:13.5px}
+  .contact .cname{font-weight:700;color:var(--green)}
+  .contact .crow{color:var(--ink);margin-top:2px}
+  .contact a{color:var(--gold);font-weight:600;text-decoration:none;word-break:break-all}
+  .contact a:hover{text-decoration:underline}
+  h2.dir{font-family:Georgia,serif;font-size:24px;margin:34px 0 6px}
+  .dirsub{color:var(--muted);font-size:13.5px;margin-bottom:14px}
+  .dirgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+  footer{max-width:920px;margin:36px auto 0;padding:0 20px;font-size:12px;color:var(--muted)}
+  .reset{margin-top:14px;background:none;border:1px solid var(--line);border-radius:8px;padding:8px 14px;
+    font:inherit;font-size:13px;color:var(--muted);cursor:pointer}
+  .reset:hover{border-color:var(--red);color:var(--red)}
+  @media (max-width:560px){ .routelabels span:nth-child(2){display:none} }
+</style>
+</head>
+<body>
+<div class="kente"></div>
+
+<header>
+  <div class="eyebrow">Operation Titre Foncier · August 2026</div>
+  <h1>Buying land in Togo –<br>the road to an <em>unchallengeable title</em></h1>
+  <p class="sub">Complete action plan as lived on the ground: from preparation abroad to collecting the Titre Foncier at the Guichet Foncier Unique in Lomé. Every phase with the responsible authority, contact details, costs and timelines. Progress is saved locally in this browser.</p>
+</header>
+
+<div class="route">
+  <div class="routebar"><div class="routefill" id="fill"></div></div>
+  <div class="routelabels"><span>Preparation</span><span>Due diligence · Notary · Boundary survey</span><span>Titre Foncier ✓</span></div>
+  <div class="routestat" id="stat"></div>
+</div>
+
+<div class="variants">
+  <button class="vbtn active" id="btnA" onclick="setVariant('A')">
+    <span class="vt">Option A · Private purchase</span>
+    <small>Buying in your own name – requires prior authorization (Art. 317 Land Code)</small>
+  </button>
+  <button class="vbtn" id="btnB" onclick="setVariant('B')">
+    <span class="vt">Option B · Via your own SARL</span>
+    <small>Set up a Togolese company that buys – bypasses the foreigner authorization, business-ready</small>
+  </button>
+</div>
+
+<main id="plan"></main>
+
+<h2 class="dir" style="max-width:920px;margin-left:auto;margin-right:auto;padding:0 20px">Address book – all authorities at a glance</h2>
+<p class="dirsub" style="max-width:920px;margin-left:auto;margin-right:auto;padding:0 20px">Save these to your phone before you start. Togo country code: +228.</p>
+<div class="dirgrid" style="max-width:920px;margin:0 auto;padding:0 20px" id="directory"></div>
+
+<footer>
+  <p>Amounts and procedures based on official Togolese sources (OTR/DCCFE, service-public.gouv.tg, 2018 Land Code) – subject to change, always confirm locally. This document is a working aid, not legal advice; a Togolese notary is mandatory for the deed of sale. €1 ≈ 655.957 FCFA (fixed peg).</p>
+  <button class="reset" onclick="resetAll()">Reset progress</button>
+</footer>
+
+<script>
+const CONTACTS = {
+  gfu: {name:"Guichet Foncier Unique (GFU) – single land window at OTR HQ", rows:[
+    "41, rue des Impôts, Boulevard Gnassingbé Eyadéma (opposite Campus Nord), Lomé",
+    "Phone: +228 22 53 14 00 / +228 22 61 51 23",
+    "Web: <a href='https://www.otr.tg' target='_blank'>otr.tg</a> · Online platform: <a href='https://e-foncier.otr.tg' target='_blank'>e-foncier.otr.tg</a>",
+    "Handles: all land operations (information, filings, tracking, collection) for Golfe &amp; Agoè-Nyivé; regional branches in the prefecture capitals"
+  ]},
+  otr: {name:"OTR – Togolese Revenue Office (DCCFE)", rows:[
+    "Directorate of Cadastre, Land Registry and Registration",
+    "41, rue des Impôts, Lomé · Phone: +228 22 53 14 00",
+    "Web: <a href='https://www.otr.tg' target='_blank'>otr.tg</a>",
+    "Handles: registration (1.5%), cadastre, registrar (conservateur), Titre Foncier"
+  ]},
+  dadc: {name:"DADC – Directorate of State Property and Cadastral Affairs", rows:[
+    "Quartier administratif, Avenue de la Présidence, Lomé",
+    "Web: <a href='https://www.dadc.gouv.tg' target='_blank'>dadc.gouv.tg</a> (notices, surveyor fee schedule, online complaints)",
+    "Handles: state property and cadastral matters"
+  ]},
+  notaires: {name:"National Chamber of Notaries of Togo (CNNT)", rows:[
+    "540, Rue Pydal, Quartier Tokoin Forever, 01 B.P. 2410, Lomé",
+    "Phone: +228 22 26 80 22 · Email: notairestogo@gmail.com",
+    "Notary directory (70+): <a href='https://notaires.tg/annuaire/' target='_blank'>notaires.tg/annuaire</a>",
+    "Handles: notarial deed – without a notary there is no valid transfer of ownership"
+  ]},
+  geometres: {name:"Order of Surveyors of Togo (OGT)", rows:[
+    "2525, Boulevard du 30 Août, Lomé",
+    "Phone: +228 22 21 80 38 · Email: cogt88@gmail.com",
+    "Handles: licensed surveyors for plans, topographic surveys, boundary demarcation (bornage)"
+  ]},
+  servicepublic: {name:"Portal service-public.gouv.tg", rows:[
+    "Official directory of Togolese administrative procedures",
+    "Web: <a href='https://service-public.gouv.tg' target='_blank'>service-public.gouv.tg</a>",
+    "Useful: procedure sheet “Immatriculation de terrains” incl. document list"
+  ]},
+  cfe: {name:"CFE / Invest in Togo (API-ZF) – for Option B", rows:[
+    "Company (SARL) formation online within days",
+    "Web: <a href='https://investirautogo.tg' target='_blank'>investirautogo.tg</a> · <a href='https://service-public.gouv.tg' target='_blank'>service-public.gouv.tg</a>",
+    "Handles: Trade Register (RCCM), tax ID (NIF), company incorporation"
+  ]},
+  jo: {name:"Official Gazette (Journal Officiel) of the Togolese Republic", rows:[
+    "Publication of the registration notice (mandatory)",
+    "starts the 3-month objection period – filing runs via the GFU/registrar"
+  ]},
+  botschaft: {name:"German Embassy Lomé", rows:[
+    "Web: <a href='https://lome.diplo.de' target='_blank'>lome.diplo.de</a>",
+    "Useful: certifications, emergency contact, lists of local lawyers/notaries"
+  ]}
+};
+
+const PLAN = [
+ {num:"0", title:"Preparation from abroad", meta:"Duration: 2–4 weeks · Cost: ~€0–300", items:[
+   {t:"Set the final budget: land price + 15–20% buffer for side costs (notary, registration, boundary survey, title)", h:"Benchmark central Lomé: €31,000–155,000 per lot (600 m²); far cheaper 20+ km out. Typical side costs: 150,000–500,000 FCFA (€230–760)."},
+   {t:"Choose the target area (Greater Lomé / Agoè, coast towards Aného, or the interior)", h:"Diaspora rule of thumb: buy within ~20 km of Lomé – appreciation + infrastructure."},
+   {t:"Check passport (6+ months validity), apply for the Togo e-visa, refresh yellow fever vaccination", h:"voyage.gouv.tg for the e-visa."},
+   {t:"Sort out money logistics: account/transfer route (Wise, SWIFT to the notary's escrow account), NEVER cash in plastic bags", h:"All payments later go exclusively through the notary – that is your insurance."},
+   {t:"Identify a trusted person on the ground (family, business partner) – but never hand over full control", h:"Classic diaspora mistake: sending money to relatives who 'buy'. No documents in your name = no ownership."},
+   {t:"Shortlist a notary from the official directory and make first contact by email", h:"notaires.tg/annuaire – 70+ sworn notaries. The notary can also file the foreigner authorization later.", c:"notaires"},
+ ]},
+ {num:"1", title:"Option B: set up a SARL in Togo (company route only)", meta:"Duration: 3–10 days · Cost: ~30,000–60,000 FCFA + capital", vb:true, items:[
+   {t:"Check the company name and register the SARL online with the CFE (RCCM + NIF in one process)", h:"Via investirautogo.tg / CFE – Togo is among the fastest incorporation countries in West Africa. SARL capital: freely chosen (recommended 100,000+ FCFA).", c:"cfe", vb:true},
+   {t:"Draft the articles so that real-estate acquisition/management is part of the corporate purpose", h:"Avoids questions from the notary and the registrar.", vb:true},
+   {t:"Open a business account with a Togolese bank (e.g. Ecobank, Orabank, Coris)", h:"For the purchase price and the later property tax.", vb:true},
+   {t:"Document the advantage: as a Togolese legal entity, the foreigner authorization under Art. 317 does not apply", h:"In return: ongoing duties (bookkeeping, OTR tax filings). Sensible anyway for your Togo market plans.", vb:true},
+ ]},
+ {num:"2", title:"On the ground: search & first checks", meta:"Duration: 1–3 weeks on site · Cost: travel + possible agent commission", items:[
+   {t:"View plots – only with reputable agencies or directly with title-holding owners", h:"Red flags: pressure ('it's gone tomorrow'), no titre foncier to show, 'family land' with many heirs, seller wants a deposit before any checks."},
+   {t:"Demand from the seller: copy of the Titre Foncier OR cadastral documents + NUP (unique parcel number)", h:"The NUP has been mandatory since August 2024. A mere 'acte de vente' or receipts = no proof of ownership!"},
+   {t:"Ask neighbours and the chef du quartier / traditional chief: who really owns the land? Any known disputes?", h:"Free and worth gold. Double sales almost always surface in the neighbourhood first."},
+   {t:"Document photos, GPS coordinates and existing boundary stones", h:"Your own evidence file from day one."},
+ ]},
+ {num:"3", title:"Due diligence at the GFU / OTR", meta:"Duration: 1–2 weeks · Cost: small information fees (partly free online)", items:[
+   {t:"Request an avis favorable / descriptive extract at the GFU: is the plot free of charges, mortgages, pending proceedings?", h:"In person at OTR HQ or online – extracts/copies must by rule be available online.", c:"gfu"},
+   {t:"Pull the cadastral extract and compare it with the seller's plan (area, coordinates, owner name!)", h:"Read-only access to cadastral data via the GFU portal / e-foncier."},
+   {t:"Verify: is the seller identical to the registered owner? For heirs: powers of attorney/mandate from ALL co-heirs", h:"Most common fraud: one heir sells without the others."},
+   {t:"Check: is the plot inside an approved subdivision (lotissement), a protected zone or a state reserve?", h:"DADC/cadastre provide information; subdivision extract via the GFU.", c:"dadc"},
+   {t:"For old titles (pre-2007): check/commission georeferencing", h:"Costs 35,000 FCFA – without it, boundary conflicts loom."},
+ ]},
+ {num:"4", title:"Option A: prior authorization for foreigners (Art. 317)", meta:"Duration: several weeks – start early! · Cost: administrative fees", va:true, items:[
+   {t:"Have the notary file the autorisation préalable with the competent administration (state property/ministry)", h:"Without this authorization the sale contract is VOID (Art. 317, 2018 Land Code). French citizens are exempt – other nationalities need it.", va:true, c:"notaires"},
+   {t:"Attach: passport copy, residence card (if any), plot data/plan, proof of funds", h:"The authorization + residence card copy are also required later for registration (official list on service-public.gouv.tg).", va:true, c:"servicepublic"},
+   {t:"Keep the original authorization safe – copies for notary, OTR and your own file", va:true},
+ ]},
+ {num:"5", title:"Surveyor & contradictory boundary demarcation (bornage)", meta:"Duration: 1–3 weeks · Cost: ~81,000 FCFA DCCFE fee + surveyor's fee", items:[
+   {t:"Commission a licensed surveyor via the Order of Surveyors (plan + topographic survey)", h:"Only surveyors on the official list – the fee schedule is published on dadc.gouv.tg.", c:"geometres"},
+   {t:"Carry out the bornage contradictoire: boundary determination WITH neighbours and the registrar's surveyor, minutes + final plan", h:"Legally mandatory for registration (Art. 230). Non-negotiable – unmarked land carries 4x the dispute risk."},
+   {t:"Have boundary stones set and photograph them", h:"Then fence/wall quickly – proven practice against 'wandering' boundaries."},
+ ]},
+ {num:"6", title:"Notary: deed of sale & payment", meta:"Duration: 1–2 weeks · Cost: notary fee + 1.5% registration", items:[
+   {t:"Have a notarial deed of sale drawn up – never a mere private agreement (sous seing privé)", h:"Private agreements cannot be published in the cadastre = worthless for the title.", c:"notaires"},
+   {t:"Pay the purchase price through the notary (escrow), release funds only after all documents are verified"},
+   {t:"Have the notarial deed registered with the OTR – registration tax 1.5% of the price (reduced in 2020, previously 5%)", h:"The notary handles the filing; you receive a réquisition number.", c:"otr"},
+   {t:"Note the réquisition number and track the case on e-foncier.otr.tg", h:"Your parcel tracking for the title. Available 24/7.", c:"gfu"},
+ ]},
+ {num:"7", title:"Registration → Titre Foncier", meta:"Duration: 3–6 months total · Cost: from ~86,000 FCFA (value-dependent)", items:[
+   {t:"File the registration requisition at the GFU (form + notarial deed + plan + authorization/passport copy or SARL documents)", h:"Full document list: service-public.gouv.tg → 'Immatriculation de terrains'.", c:"gfu"},
+   {t:"The market value (valeur vénale) is assessed and the fees are calculated – payment to the OTR", h:"Items: filing, registration, land registry, boundary survey, Official Gazette."},
+   {t:"The registration notice appears in the Official Gazette – wait out the 3-month objection period", h:"During this time any third party can assert rights. No panic: without objection, the process continues automatically.", c:"jo"},
+   {t:"After the deadline: the Titre Foncier is issued, signed and sent to the GFU for collection", h:"Collect in person or by proxy. From now on: definitive and unchallengeable."},
+   {t:"Secure the title digitally (encrypted scan in the cloud + copy abroad), original in the safe"},
+ ]},
+ {num:"8", title:"After the purchase: securing & obligations", meta:"ongoing", items:[
+   {t:"Physically secure the plot: build a wall/fence, possibly hire a caretaker (gardien)", h:"Unattended land invites occupation – fencing is half the battle in Togo."},
+   {t:"Pay the annual property tax (taxe foncière) to the OTR – set a recurring reminder", c:"otr"},
+   {t:"When reselling: budget for the capital gains tax on the sale (OTR regime)"},
+   {t:"If building: apply for the building permit (permis de construire) at the municipality/urban planning office (separate procedure)"},
+   {t:"Keep your contact details up to date at the GFU and add the NUP/title number to your own records"},
+ ]},
+];
+
+let variant = 'A';
+let checked = {};
+try { checked = JSON.parse(localStorage.getItem('togoPlan')||'{}'); } catch(e){ checked = {}; }
+try { variant = localStorage.getItem('togoVariant') || 'A'; } catch(e){}
+function save(){ try{ localStorage.setItem('togoPlan', JSON.stringify(checked)); localStorage.setItem('togoVariant', variant);}catch(e){} }
+function contactCard(key){
+  const c = CONTACTS[key]; if(!c) return '';
+  return `<div class="contact"><div class="cname">📍 ${c.name}</div>${c.rows.map(r=>`<div class="crow">${r}</div>`).join('')}</div>`;
+}
+function render(){
+  const plan = document.getElementById('plan');
+  plan.innerHTML = '';
+  PLAN.forEach((ph, pi)=>{
+    if(ph.va && variant!=='A') return;
+    if(ph.vb && variant!=='B') return;
+    const items = ph.items.filter(it => !(it.va && variant!=='A') && !(it.vb && variant!=='B'));
+    const doneCount = items.filter((it)=>checked[pi+'-'+ph.items.indexOf(it)]).length;
+    const allDone = doneCount===items.length && items.length>0;
+    const div = document.createElement('div');
+    div.className = 'phase'+(allDone?' complete':'')+(doneCount>0&&!allDone?' open':'');
+    const shownContacts = new Set();
+    div.innerHTML = `
+      <div class="phead" onclick="this.parentElement.classList.toggle('open')">
+        <div class="pnum">${allDone?'✓':ph.num}</div>
+        <div>
+          <div class="ptitle">${ph.title}${ph.vb?'<span class="tagB">Option B</span>':''}${ph.va?'<span class="tagB" style="background:#eef5ef;color:#1f6f43">Option A</span>':''}</div>
+          <div class="pmeta">${ph.meta} · <b>${doneCount}/${items.length}</b> done</div>
+        </div>
+        <div class="chev">›</div>
+      </div>
+      <div class="pbody">
+        ${items.map((it)=>{
+          const ii = ph.items.indexOf(it);
+          const id = pi+'-'+ii;
+          const cc = (it.c && !shownContacts.has(it.c)) ? (shownContacts.add(it.c), contactCard(it.c)) : '';
+          return `<div class="item ${checked[id]?'checked':''}">
+            <input type="checkbox" id="cb${id}" ${checked[id]?'checked':''} onchange="toggle('${id}')">
+            <label for="cb${id}">${it.t}${it.h?`<span class="hint">↳ ${it.h}</span>`:''}</label>
+          </div>${cc}`;
+        }).join('')}
+        ${pi===2?'<div class="warn"><b>Golden rule:</b> Not a single payment – not even a "reservation" – before the GFU check and the notary give the green light. Plots sold twice are the most common fraud pattern in Togo.</div>':''}
+        ${pi===0?'<div class="tip"><b>Timing tip:</b> Option A? Kick off the prior authorization (phase 4) in parallel with the search – it is the slowest building block. Option B? Set up the SARL online before travelling.</div>':''}
+      </div>`;
+    plan.appendChild(div);
+  });
+  updateProgress();
+}
+function toggle(id){ checked[id]=!checked[id]; save(); render(); }
+function updateProgress(){
+  let total=0, done=0;
+  PLAN.forEach((ph,pi)=>{
+    if(ph.va && variant!=='A') return;
+    if(ph.vb && variant!=='B') return;
+    ph.items.forEach((it,ii)=>{
+      if(it.va && variant!=='A') return;
+      if(it.vb && variant!=='B') return;
+      total++; if(checked[pi+'-'+ii]) done++;
+    });
+  });
+  const pct = total? Math.round(done/total*100):0;
+  document.getElementById('fill').style.width = pct+'%';
+  document.getElementById('stat').innerHTML =
+    pct===100 ? '🎉 <b>Congratulations!</b> Titre Foncier secured – definitive and unchallengeable.'
+    : `<b>${done}</b> of <b>${total}</b> steps completed (${pct}%) – Option ${variant==='A'?'A · Private purchase':'B · SARL'}`;
+}
+function setVariant(v){
+  variant=v; save();
+  document.getElementById('btnA').classList.toggle('active', v==='A');
+  document.getElementById('btnB').classList.toggle('active', v==='B');
+  render();
+}
+function resetAll(){
+  if(confirm('Really reset all checkmarks?')){ checked={}; save(); render(); }
+}
+document.getElementById('directory').innerHTML =
+  Object.keys(CONTACTS).map(k=>contactCard(k)).join('');
+setVariant(variant);
+</script>
+</body>
+</html>

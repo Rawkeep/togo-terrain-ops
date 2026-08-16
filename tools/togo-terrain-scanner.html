@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Togo Terrain-Scanner – Suchen · Erfassen · Vergleichen</title>
+<style>
+  :root{
+    --ink:#14231c; --paper:#f7f5ef; --card:#ffffff;
+    --green:#1f6f43; --gold:#c8930a; --gold-soft:#f3e3bb;
+    --red:#b3402e; --muted:#6d7a72; --line:#dcd7c9;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+    background:var(--paper);color:var(--ink);line-height:1.5;padding-bottom:90px}
+  .kente{height:8px;background:repeating-linear-gradient(90deg,
+    var(--green) 0 40px, var(--gold) 40px 60px, var(--ink) 60px 70px, var(--red) 70px 80px)}
+  header{max-width:1040px;margin:0 auto;padding:28px 18px 6px}
+  .eyebrow{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  h1{font-family:Georgia,serif;font-size:clamp(26px,4.5vw,38px);line-height:1.12;margin:6px 0 8px}
+  h1 em{font-style:italic;color:var(--green)}
+  .sub{color:var(--muted);font-size:14px;max-width:680px}
+
+  .tabs{max-width:1040px;margin:18px auto 0;padding:0 18px;display:flex;gap:8px;flex-wrap:wrap}
+  .tab{padding:10px 18px;border:2px solid var(--line);border-radius:99px;background:var(--card);
+    cursor:pointer;font:inherit;font-weight:700;font-size:14px;color:var(--muted)}
+  .tab.active{border-color:var(--green);color:var(--green);background:#eef5ef}
+  section{max-width:1040px;margin:16px auto 0;padding:0 18px;display:none}
+  section.active{display:block}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+  .pcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .pcard h3{font-size:15.5px;margin-bottom:2px}
+  .pcard .zone{font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  .row{display:flex;justify-content:space-between;font-size:13.5px;padding:3px 0;border-bottom:1px dashed #f0ede3}
+  .row b{font-variant-numeric:tabular-nums}
+  .score{display:inline-block;min-width:44px;text-align:center;font-family:Georgia,serif;font-weight:700;
+    font-size:18px;padding:4px 8px;border-radius:8px;color:#fff}
+  .s-good{background:var(--green)} .s-mid{background:var(--gold)} .s-bad{background:var(--red)}
+  .badge{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:99px;margin:2px 4px 2px 0}
+  .b-tf{background:#dcefe2;color:var(--green)} .b-tampon{background:var(--gold-soft);color:#7a5a06}
+  .b-weak{background:#fbe3de;color:var(--red)}
+  .status-sel{width:100%;margin-top:8px;padding:7px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13px;background:#faf8f1}
+  .pactions{display:flex;gap:8px;margin-top:8px}
+  .pactions button{flex:1;padding:7px;border:1px solid var(--line);border-radius:8px;background:#faf8f1;
+    font:inherit;font-size:12.5px;cursor:pointer}
+  .pactions button:hover{border-color:var(--green)}
+  .pactions .del:hover{border-color:var(--red);color:var(--red)}
+  .dd{margin-top:8px;font-size:12.5px}
+  .dd label{display:flex;gap:6px;align-items:flex-start;padding:3px 0;cursor:pointer;color:var(--muted)}
+  .dd input{accent-color:var(--green);margin-top:2px}
+  .dd .on{color:var(--ink)}
+  a.src{font-size:12px;color:var(--gold);word-break:break-all}
+
+  form{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+  .frow{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:10px}
+  label.f{display:block;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  input,select,textarea{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:14px;background:#fdfcf8;margin-top:3px}
+  textarea{min-height:56px}
+  .addbtn{width:100%;padding:12px;background:var(--green);color:#fff;border:none;border-radius:10px;
+    font:inherit;font-weight:700;font-size:15px;cursor:pointer}
+  .addbtn:hover{background:#185a36}
+  .calc{font-size:13px;color:var(--muted);margin-bottom:10px}
+  .calc b{color:var(--green)}
+
+  .platgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+  .plat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .plat h3{font-size:15px;color:var(--green)}
+  .plat p{font-size:12.5px;color:var(--muted);margin:4px 0 10px}
+  .plat a{display:inline-block;background:var(--ink);color:var(--gold);padding:8px 14px;border-radius:8px;
+    text-decoration:none;font-size:13px;font-weight:700}
+  .zonesel{max-width:400px;margin-bottom:14px}
+
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;font-size:13px}
+  th,td{padding:9px 10px;text-align:left;border-bottom:1px solid #f0ede3}
+  th{background:var(--ink);color:var(--gold-soft);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em}
+  td b{font-variant-numeric:tabular-nums}
+  .bench-note{font-size:12.5px;color:var(--muted);margin-top:8px}
+
+  .iobar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .iobar button{padding:9px 14px;border:1px solid var(--line);border-radius:8px;background:var(--card);
+    font:inherit;font-size:13px;cursor:pointer}
+  .empty{text-align:center;color:var(--muted);padding:40px 10px;font-size:14px;background:var(--card);
+    border:1px dashed var(--line);border-radius:12px}
+  .tip{background:#eef5ef;border-left:4px solid var(--green);padding:10px 14px;border-radius:0 8px 8px 0;
+    font-size:13px;margin:12px 0}
+</style>
+</head>
+<body>
+<div class="kente"></div>
+<header>
+  <div class="eyebrow">Operation Titre Foncier · Werkzeug 3</div>
+  <h1>Terrain-Scanner <em>Togo</em></h1>
+  <p class="sub">Plattformen scannen, Kandidaten erfassen, automatisch bewerten und die Due Diligence pro Objekt abhaken. Preis/m², Euro-Umrechnung und Zonen-Vergleich rechnet das Tool selbst. Alles lokal in deinem Browser.</p>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('scan',this)">🔎 Scannen</button>
+  <button class="tab" onclick="showTab('add',this)">➕ Erfassen</button>
+  <button class="tab" onclick="showTab('list',this)">📋 Kandidaten (<span id="cnt">0</span>)</button>
+  <button class="tab" onclick="showTab('bench',this)">📊 Zonen-Benchmarks</button>
+</div>
+
+<!-- SCAN -->
+<section id="scan" class="active">
+  <div class="tip"><b>So scannst du:</b> Zone wählen → Plattform-Buttons öffnen die Suche direkt mit deinem Suchbegriff. Guten Fund per Copy-Paste im Tab „Erfassen" sichern. Faustregel: nur „3 Tampons" oder besser weiterverfolgen.</div>
+  <div class="zonesel">
+    <label class="f">Such-Zone</label>
+    <select id="scanZone" onchange="renderPlatforms()">
+      <option value="Agoè">Agoè (Zossimé, Legbassito, Zanguéra…)</option>
+      <option value="Adidogomé">Adidogomé / Sagbado</option>
+      <option value="Baguida">Baguida / Avépozo (Küste Ost)</option>
+      <option value="Adétikopé">Adétikopé / PIA (Nationale 1)</option>
+      <option value="Sanguéra">Sanguéra / Mission Tové</option>
+      <option value="Davié">Davié / Tsévié (30–35 km Nord)</option>
+      <option value="Noépé">Noépé (Richtung Ghana/Kpalimé)</option>
+      <option value="Kpalimé">Kpalimé (120 km, Berge)</option>
+      <option value="Aného">Aného / Küste Ost (45 km)</option>
+      <option value="Atakpamé">Atakpamé (160 km)</option>
+      <option value="terrain Togo">Ganz Togo (breit)</option>
+    </select>
+  </div>
+  <div class="platgrid" id="platforms"></div>
+</section>
+
+<!-- ADD -->
+<section id="add">
+  <form onsubmit="return addPlot(event)">
+    <div class="frow">
+      <div><label class="f">Bezeichnung / Quartier*</label><input id="fName" placeholder="z. B. Zanguéra-Agokpanou Ecklot" required></div>
+      <div><label class="f">Zone*</label>
+        <select id="fZone">
+          <option>Agoè</option><option>Adidogomé</option><option>Baguida/Avépozo</option>
+          <option>Adétikopé/PIA</option><option>Sanguéra</option><option>Davié/Tsévié</option>
+          <option>Noépé</option><option>Kpalimé</option><option>Aného</option><option>Sonstige</option>
+        </select></div>
+      <div><label class="f">Preis (FCFA)*</label><input id="fPrice" type="number" placeholder="12000000" required oninput="calcPreview()"></div>
+      <div><label class="f">Fläche (m²)*</label><input id="fSize" type="number" placeholder="600 = 1 Lot" required oninput="calcPreview()"></div>
+    </div>
+    <div class="frow">
+      <div><label class="f">Papiere*</label>
+        <select id="fPapers">
+          <option value="TF">Titre Foncier (persönlich)</option>
+          <option value="TFcours">Titre Foncier en cours</option>
+          <option value="3T" selected>3 Tampons</option>
+          <option value="PV">Plan visé</option>
+          <option value="PS">Plan simple (⚠ Risiko)</option>
+        </select></div>
+      <div><label class="f">Entfernung zum Asphalt (m)</label><input id="fRoad" type="number" placeholder="230"></div>
+      <div><label class="f">Kontakt / Telefon</label><input id="fTel" placeholder="+228 …"></div>
+      <div><label class="f">Anzeigen-Link</label><input id="fUrl" placeholder="https://…"></div>
+    </div>
+    <div class="frow">
+      <div style="grid-column:1/-1"><label class="f">Notizen</label><textarea id="fNotes" placeholder="Ecklage, Strom vorhanden, Verkäufer = Erbe? …"></textarea></div>
+    </div>
+    <div class="calc" id="preview">Preis eingeben → ich rechne €, Preis/m² und Score live.</div>
+    <button class="addbtn" type="submit">Kandidat speichern</button>
+  </form>
+</section>
+
+<!-- LIST -->
+<section id="list">
+  <div id="plots" class="grid"></div>
+  <div id="emptyMsg" class="empty">Noch keine Kandidaten erfasst. Ab zum Scannen! 🔎</div>
+  <div class="iobar">
+    <button onclick="exportJSON()">⬇ Export (JSON-Backup)</button>
+    <button onclick="document.getElementById('impFile').click()">⬆ Import</button>
+    <input type="file" id="impFile" accept=".json" style="display:none" onchange="importJSON(event)">
+  </div>
+</section>
+
+<!-- BENCH -->
+<section id="bench">
+  <table>
+    <tr><th>Zone</th><th>Typisch FCFA / Lot (600 m²)</th><th>≈ € / Lot</th><th>FCFA/m²</th><th>Charakter</th></tr>
+    <tr><td>Lomé Zentrum (Tokoin, Bè)</td><td><b>20–100 Mio.</b></td><td>30.500–152.000</td><td>33.000–167.000</td><td>voll erschlossen, knapp</td></tr>
+    <tr><td>Agoè (Zossimé, Legbassito)</td><td><b>12–25 Mio.</b></td><td>18.300–38.000</td><td>20.000–42.000</td><td>Wohngebiete, wachsend – deine Zone</td></tr>
+    <tr><td>Adidogomé / Sagbado</td><td><b>10–22 Mio.</b></td><td>15.250–33.500</td><td>17.000–37.000</td><td>West-Achse, gut angebunden</td></tr>
+    <tr><td>Baguida / Avépozo</td><td><b>25–40 Mio.</b></td><td>38.000–61.000</td><td>42.000–67.000</td><td>Küste, Premium</td></tr>
+    <tr><td>Sanguéra / Zanguéra</td><td><b>8–14 Mio.</b></td><td>12.200–21.300</td><td>13.000–23.000</td><td>Stadtrand, Preis-Leistung</td></tr>
+    <tr><td>Adétikopé / PIA</td><td><b>2–8 Mio.</b></td><td>3.000–12.200</td><td>3.300–13.000</td><td>Industrieplattform, Zukunftswette</td></tr>
+    <tr><td>Davié / Tsévié</td><td><b>2–6 Mio.</b></td><td>3.000–9.100</td><td>3.300–10.000</td><td>Nationale 1, ruhig</td></tr>
+    <tr><td>Kpalimé / Umland</td><td><b>1,5–5 Mio.</b></td><td>2.300–7.600</td><td>2.500–8.300</td><td>Berge, Klima, Agro</td></tr>
+  </table>
+  <p class="bench-note">Richtwerte aus aktuellen Anzeigen (2026), stark lage- und papierabhängig. Fertiger Titre Foncier: Aufpreis grob +8–12 Mio. gegenüber „3 Tampons" in Agoè. Der Score im Tracker vergleicht deinen Preis/m² gegen die Zonen-Mitte.</p>
+</section>
+
+<script>
+const RATE = 655.957; // EUR fix
+const BENCH = { // FCFA/m² Zonen-Mittelwert
+  "Agoè":31000,"Adidogomé":27000,"Baguida/Avépozo":54000,"Adétikopé/PIA":8000,
+  "Sanguéra":18000,"Davié/Tsévié":6500,"Noépé":9000,"Kpalimé":5500,"Aného":15000,"Sonstige":20000
+};
+const PAPER_SCORE = {TF:40,TFcours:32,"3T":25,PV:12,PS:0};
+const PAPER_LABEL = {TF:"Titre Foncier",TFcours:"TF en cours","3T":"3 Tampons",PV:"Plan visé",PS:"Plan simple ⚠"};
+const PAPER_CLASS = {TF:"b-tf",TFcours:"b-tf","3T":"b-tampon",PV:"b-weak",PS:"b-weak"};
+const STATUSES = ["Neu","Kontaktiert","Besichtigt","Due Diligence","Verhandlung","⭐ Favorit","❌ Verworfen"];
+const DD_ITEMS = ["Papiere-Kopie erhalten & NUP geprüft","GFU/e-foncier: lastenfrei bestätigt","Verkäufer = eingetragener Eigentümer","Nachbarn/Chef du quartier befragt","Geometer-Check / Grenzen ok"];
+
+const PLATFORMS = [
+ {n:"CoinAfrique", d:"Größtes Anzeigenvolumen, viele Privatverkäufer.", u:q=>`https://tg.coinafrique.com/recherche?query=terrain+${encodeURIComponent(q)}`},
+ {n:"Keur-Immo", d:"Filter nach Rechtsstatus, geprüfte Anbieter.", u:q=>`https://keur-immo.com/en/togo/land-for-sale-in-togo/?s=${encodeURIComponent(q)}`},
+ {n:"ImmoAsk", d:"Lokaler Marktplatz mit Titel-Angaben.", u:q=>`https://www.immoask.com/tg/ventes-immobilieres/terrain/lome?q=${encodeURIComponent(q)}`},
+ {n:"Habitat-Afrik", d:"Detaillierte Papier-Angaben je Anzeige.", u:q=>`https://tg.habitat-afrik.com/recherche.php?q=${encodeURIComponent('terrain '+q)}`},
+ {n:"Immautogo", d:"Kuratierte Objekte, oft mit TF.", u:q=>`https://immautogo.com/search?q=${encodeURIComponent('terrain '+q)}`},
+ {n:"Agoloo", d:"Sammellisten mit vielen Preisangaben.", u:q=>`https://agoloo.com/immobilier/terrain-parcelle_1?q=${encodeURIComponent(q)}`},
+ {n:"Expat.com Togo", d:"Diaspora-/Expat-Anzeigen auf Englisch.", u:q=>`https://www.expat.com/en/housing/africa/togo/land-for-sale.html`},
+ {n:"Google (frisch)", d:"Fängt WhatsApp-/Facebook-Listen mit ein.", u:q=>`https://www.google.com/search?q=${encodeURIComponent('terrain à vendre '+q+' Togo lot FCFA')}&tbs=qdr:m`},
+];
+
+let plots = [];
+try{ plots = JSON.parse(localStorage.getItem('togoPlots')||'[]'); }catch(e){ plots=[]; }
+function save(){ try{ localStorage.setItem('togoPlots', JSON.stringify(plots)); }catch(e){} }
+
+function showTab(id, btn){
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function renderPlatforms(){
+  const q = document.getElementById('scanZone').value;
+  document.getElementById('platforms').innerHTML = PLATFORMS.map(p=>
+    `<div class="plat"><h3>${p.n}</h3><p>${p.d}</p><a href="${p.u(q)}" target="_blank" rel="noopener">Suche öffnen →</a></div>`
+  ).join('');
+}
+
+function scoreOf(p){
+  let s = PAPER_SCORE[p.papers]||0;                       // max 40
+  const bench = BENCH[p.zone]||20000;
+  const ppm = p.price/p.size;
+  const ratio = ppm/bench;                                 // Preis vs. Zonen-Mitte
+  s += ratio<=0.6?35: ratio<=0.85?28: ratio<=1.1?20: ratio<=1.4?10: 3;  // max 35
+  if(p.road!=null && p.road!==''){ const r=+p.road; s += r<=100?15: r<=300?11: r<=800?7: 3; } else s+=6; // max 15
+  s += Math.min(10,(p.dd||[]).filter(Boolean).length*2);   // max 10
+  return Math.round(s);
+}
+
+function fmtF(n){ return (+n).toLocaleString('de-DE'); }
+function fmtE(n){ return Math.round(n/RATE).toLocaleString('de-DE'); }
+
+function calcPreview(){
+  const pr=+document.getElementById('fPrice').value, sz=+document.getElementById('fSize').value;
+  if(pr&&sz){
+    document.getElementById('preview').innerHTML =
+      `≈ <b>${fmtE(pr)} €</b> · <b>${fmtF(Math.round(pr/sz))} FCFA/m²</b> · ${(sz/600).toFixed(2).replace('.',',')} Lot`;
+  }
+}
+
+function addPlot(e){
+  e.preventDefault();
+  plots.push({
+    id:Date.now(), name:document.getElementById('fName').value, zone:document.getElementById('fZone').value,
+    price:+document.getElementById('fPrice').value, size:+document.getElementById('fSize').value,
+    papers:document.getElementById('fPapers').value, road:document.getElementById('fRoad').value,
+    tel:document.getElementById('fTel').value, url:document.getElementById('fUrl').value,
+    notes:document.getElementById('fNotes').value, status:"Neu", dd:[false,false,false,false,false]
+  });
+  save(); e.target.reset(); document.getElementById('preview').textContent='Gespeichert ✓';
+  renderList();
+  return false;
+}
+
+function renderList(){
+  const el = document.getElementById('plots');
+  document.getElementById('cnt').textContent = plots.length;
+  document.getElementById('emptyMsg').style.display = plots.length? 'none':'block';
+  const sorted=[...plots].sort((a,b)=>scoreOf(b)-scoreOf(a));
+  el.innerHTML = sorted.map(p=>{
+    const sc=scoreOf(p), cls=sc>=70?'s-good':sc>=45?'s-mid':'s-bad';
+    return `<div class="pcard">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div><div class="zone">${p.zone}</div><h3>${p.name}</h3></div>
+        <span class="score ${cls}" title="0–100: Papiere 40 · Preis 35 · Lage 15 · DD 10">${sc}</span>
+      </div>
+      <span class="badge ${PAPER_CLASS[p.papers]}">${PAPER_LABEL[p.papers]}</span>
+      ${p.road!==''&&p.road!=null?`<span class="badge b-tampon">${p.road} m z. Asphalt</span>`:''}
+      <div class="row"><span>Preis</span><b>${fmtF(p.price)} F ≈ ${fmtE(p.price)} €</b></div>
+      <div class="row"><span>Fläche</span><b>${p.size} m² (${(p.size/600).toFixed(2).replace('.',',')} Lot)</b></div>
+      <div class="row"><span>Preis/m²</span><b>${fmtF(Math.round(p.price/p.size))} F</b></div>
+      ${p.tel?`<div class="row"><span>Kontakt</span><b>${p.tel}</b></div>`:''}
+      ${p.url?`<a class="src" href="${p.url}" target="_blank" rel="noopener">Anzeige öffnen ↗</a>`:''}
+      ${p.notes?`<div style="font-size:12.5px;color:var(--muted);margin-top:6px">📝 ${p.notes}</div>`:''}
+      <select class="status-sel" onchange="setStatus(${p.id},this.value)">
+        ${STATUSES.map(s=>`<option ${s===p.status?'selected':''}>${s}</option>`).join('')}
+      </select>
+      <div class="dd">${DD_ITEMS.map((d,i)=>
+        `<label class="${p.dd&&p.dd[i]?'on':''}"><input type="checkbox" ${p.dd&&p.dd[i]?'checked':''} onchange="toggleDD(${p.id},${i})">${d}</label>`).join('')}
+      </div>
+      <div class="pactions"><button class="del" onclick="delPlot(${p.id})">Löschen</button></div>
+    </div>`;
+  }).join('');
+}
+
+function setStatus(id,v){ const p=plots.find(x=>x.id===id); if(p){p.status=v; save(); renderList();} }
+function toggleDD(id,i){ const p=plots.find(x=>x.id===id); if(p){p.dd=p.dd||[false,false,false,false,false]; p.dd[i]=!p.dd[i]; save(); renderList();} }
+function delPlot(id){ if(confirm('Kandidat wirklich löschen?')){ plots=plots.filter(x=>x.id!==id); save(); renderList(); } }
+
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(plots,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='togo-terrains-'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+}
+function importJSON(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ const d=JSON.parse(r.result); if(Array.isArray(d)){ plots=d; save(); renderList(); alert('Import ok: '+d.length+' Kandidaten'); } }catch(err){ alert('Import fehlgeschlagen'); } };
+  r.readAsText(f);
+}
+
+renderPlatforms(); renderList();
+</script>
+</body>
+</html>
